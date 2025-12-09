@@ -1,0 +1,112 @@
+// Prisma schema for eSportGuru MVP
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  LEARNER
+  SHERPA
+  ADMIN
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+}
+
+enum SherpaAvailability {
+  AVAILABLE
+  BUSY
+  OFFLINE
+}
+
+model User {
+  id          String   @id @default(uuid()) @db.Uuid
+  email       String   @unique
+  discordId   String?  @unique
+  displayName String?
+  roles       Role[]   @default([LEARNER])
+  balance     Decimal  @default(0) @db.Numeric(12, 2)
+
+  sherpaProfile  SherpaProfile?
+  learnerBookings Booking[] @relation("LearnerBookings")
+  sherpaBookings  Booking[] @relation("SherpaBookings")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model SherpaProfile {
+  userId     String  @id @db.Uuid
+  user       User    @relation(fields: [userId], references: [id])
+  gameId     String?
+  game       Game?   @relation(fields: [gameId], references: [id])
+  bio        String?
+  hourlyRate Decimal @db.Numeric(10, 2)
+  isAcceptingBooking Boolean @default(true)
+  availability       SherpaAvailability @default(AVAILABLE)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Game {
+  id        String  @id @default(uuid()) @db.Uuid
+  name      String  @unique
+  imageUrl  String?
+  description String?
+
+  sherpas SherpaProfile[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Booking {
+  id        String   @id @default(uuid()) @db.Uuid
+  learnerId String   @db.Uuid
+  sherpaId  String   @db.Uuid
+
+  learner User @relation("LearnerBookings", fields: [learnerId], references: [id])
+  sherpa  User @relation("SherpaBookings", fields: [sherpaId], references: [id])
+
+  status           BookingStatus @default(PENDING)
+  discordChannelId String?
+  discordInviteLink String?
+  startTime        DateTime
+  endTime          DateTime?
+  price            Decimal? @db.Numeric(10, 2)
+  notes            String?
+
+  sessionLogs SessionLog[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+  @@index([sherpaId, status])
+  @@index([learnerId])
+}
+
+model SessionLog {
+  id          String   @id @default(uuid()) @db.Uuid
+  bookingId   String   @db.Uuid
+  booking     Booking  @relation(fields: [bookingId], references: [id])
+  recordingUrl String?
+  durationSeconds Int?
+  botNotes     String?
+  metadata     Json?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([bookingId])
+}
+

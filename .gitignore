@@ -1,0 +1,28 @@
+# Node
+node_modules
+npm-debug.log*
+package-lock.json
+
+# Environment
+.env
+.env.*
+
+# Build outputs
+dist
+.next
+.turbo
+coverage
+*.tsbuildinfo
+
+# OS / Editor
+.DS_Store
+Thumbs.db
+.idea
+.vscode
+
+# Project-specific
+apps/api/dist
+apps/client/.next
+apps/client/out
+apps/client/.vercel
+
