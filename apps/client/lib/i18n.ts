@@ -45,8 +45,8 @@ export const translations = {
   vi: {
     nav: {
       browse: "Duyệt",
-      becomeTeacher: "Trở thành Chuyên gia",
-      about: "Về chúng tôi",
+      becomeTeacher: "Danh sách chuyên gia",
+      about: "Danh sách phòng học",
     },
     hero: {
       title: "Kết nối. Học tập. Chơi.",

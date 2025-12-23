@@ -1,9 +1,10 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useLanguage } from "../context/LanguageContext";
 import { useTheme } from "../context/ThemeContext";
 import { useAuth } from "../context/AuthContext";
 import { Moon, Sun, Globe, LogOut } from "lucide-react";
 import { useState } from "react";
+
 
 export default function Header() {
   const { language, setLanguage, t } = useLanguage();
@@ -11,6 +12,12 @@ export default function Header() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [isLanguageOpen, setIsLanguageOpen] = useState(false);
+  const navLinkClass = ({ isActive }: { isActive: boolean }) =>
+    `relative font-medium text-sm transition-colors
+   ${isActive
+      ? "text-blue-600 dark:text-blue-400 after:absolute after:-bottom-1 after:left-0 after:w-full after:h-[2px] after:bg-blue-600"
+      : "text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white"
+    }`;
 
   return (
     <header className="sticky top-0 z-50 border-b border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-slate-950/95 backdrop-blur-sm">
@@ -28,24 +35,17 @@ export default function Header() {
 
           {/* Navigation */}
           <nav className="hidden md:flex items-center gap-8">
-            <Link
-              to="/browse"
-              className="text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors font-medium text-sm"
-            >
+            <NavLink to="/browse" className={navLinkClass}>
               {t.nav.browse}
-            </Link>
-            <Link
-              to="/become-expert"
-              className="text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors font-medium text-sm"
-            >
+            </NavLink>
+
+            <NavLink to="/experts" className={navLinkClass}>
               {t.nav.becomeTeacher}
-            </Link>
-            <Link
-              to="/about"
-              className="text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors font-medium text-sm"
-            >
+            </NavLink>
+
+            <NavLink to="/about" className={navLinkClass}>
               {t.nav.about}
-            </Link>
+            </NavLink>
           </nav>
 
           {/* Right side controls */}
