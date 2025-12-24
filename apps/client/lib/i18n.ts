@@ -56,6 +56,8 @@ export const translations = {
       start: "Start",
       busy: "In session",
       free: "Available",
+      date: "Date",
+      time: "Time",
     },
   },
   vi: {
@@ -116,6 +118,8 @@ export const translations = {
       start: "Bắt đầu",
       busy: "Đang học",
       free: "Rảnh",
+      date: "Ngày",
+      time: "Giờ",
     },
   },
 };
