@@ -11,14 +11,13 @@ import { LanguageProvider } from "../client/context/LanguageContext";
 import { AuthProvider } from "../client/context/AuthContext";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
-import Browse from "./pages/Browse";
-import BecomeExpert from "./pages/Expert";
 import About from "./pages/About";
 import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
 import Dashboard from "./pages/Dashboard";
 import Experts from "./pages/Expert";
 import ExpertDetail from "./pages/ExpertDetail";
+import MyLearningSessions from "./pages/MyLearningSessions";
 
 const queryClient = new QueryClient();
 
@@ -33,7 +32,7 @@ const App = () => (
             <BrowserRouter>
               <Routes>
                 <Route path="/" element={<Index />} />
-                <Route path="/browse" element={<Browse />} />
+                <Route path="/my_session" element={<MyLearningSessions />} />
                 <Route path="/about" element={<About />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/signup" element={<SignUp />} />

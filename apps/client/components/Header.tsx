@@ -35,7 +35,7 @@ export default function Header() {
 
           {/* Navigation */}
           <nav className="hidden md:flex items-center gap-8">
-            <NavLink to="/browse" className={navLinkClass}>
+            <NavLink to="/my_session" className={navLinkClass}>
               {t.nav.browse}
             </NavLink>
 

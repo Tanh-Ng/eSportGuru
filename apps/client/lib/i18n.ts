@@ -1,7 +1,7 @@
 export const translations = {
   en: {
     nav: {
-      browse: "Browse",
+      browse: "My session",
       becomeTeacher: "Become an Expert",
       about: "About",
     },
@@ -60,7 +60,7 @@ export const translations = {
   },
   vi: {
     nav: {
-      browse: "Duyệt",
+      browse: "Buổi học của tôi",
       becomeTeacher: "Danh sách chuyên gia",
       about: "Danh sách phòng học",
     },
