@@ -11,7 +11,7 @@ import { LanguageProvider } from "../client/context/LanguageContext";
 import { AuthProvider } from "../client/context/AuthContext";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
-import About from "./pages/About";
+import RoomList from "./pages/RoomList";
 import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
 import Dashboard from "./pages/Dashboard";
@@ -33,7 +33,7 @@ const App = () => (
               <Routes>
                 <Route path="/" element={<Index />} />
                 <Route path="/my_session" element={<MyLearningSessions />} />
-                <Route path="/about" element={<About />} />
+                <Route path="/about" element={<RoomList />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/signup" element={<SignUp />} />
                 <Route path="/dashboard" element={<Dashboard />} />
