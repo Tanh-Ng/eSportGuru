@@ -7,6 +7,9 @@
     "start:dev": "nest start --watch",
     "start:prod": "node dist/main"
   },
+  "prisma": {
+    "seed": "npx ts-node prisma/seed.ts"
+  },
   "dependencies": {
     "@nestjs/common": "^10.0.0",
     "@nestjs/core": "^10.0.0",

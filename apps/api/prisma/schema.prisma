@@ -29,7 +29,7 @@ enum SherpaAvailability {
 model User {
   id          String   @id @default(auto()) @map("_id") @db.ObjectId
   email       String   @unique
-  discordId   String?  @unique
+  discordId   String?  
   displayName String?
   roles       Role[]   @default([LEARNER])
 
@@ -42,7 +42,7 @@ model User {
 
 model SherpaProfile {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId    String   @db.ObjectId
+  userId    String   @unique @db.ObjectId
   gameId    String?  @db.ObjectId
 
   bio        String?
@@ -53,7 +53,6 @@ model SherpaProfile {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@index([userId])
   @@index([gameId])
 }
 
@@ -67,29 +66,29 @@ model Game {
   updatedAt DateTime @updatedAt
 }
 
-model Booking {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  model Booking {
+    id        String   @id @default(auto()) @map("_id") @db.ObjectId
 
-  learnerId String   @db.ObjectId
-  sherpaId  String   @db.ObjectId
+    learnerId String   @db.ObjectId
+    sherpaId  String   @db.ObjectId
 
-  status    BookingStatus @default(PENDING)
+    status    BookingStatus @default(PENDING)
 
-  discordChannelId String?
-  discordInviteLink String?
+    discordChannelId String?
+    discordInviteLink String?
 
-  startTime DateTime
-  endTime   DateTime?
-  price     Int?
-  notes     String?
+    startTime DateTime
+    endTime   DateTime?
+    price     Int?
+    notes     String?
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 
-  @@index([learnerId])
-  @@index([sherpaId])
-  @@index([status])
-}
+    @@index([learnerId])
+    @@index([sherpaId])
+    @@index([status])
+  }
 
 model SessionLog {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
