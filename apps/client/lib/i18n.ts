@@ -3,7 +3,7 @@ export const translations = {
     nav: {
       browse: "My session",
       becomeTeacher: "Become an Expert",
-      about: "About",
+      about: "Room Lists",
     },
     hero: {
       title: "Connect. Learn. Play.",
@@ -46,10 +46,10 @@ export const translations = {
     },
     //room list
     rooms: {
-      title: "Classrooms",
+      title: "Room Lists",
       room: "Room",
       teacher: "Expert",
-      subject: "Subject",
+      subject: "Game",
       level: "Level",
       status: "Status",
       action: "Action",

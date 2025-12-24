@@ -4,7 +4,7 @@ import experts from "../data/experts";
 import { useNavigate } from "react-router-dom";
 import { useLanguage } from "../context/LanguageContext";
 
-export default function About() {
+export default function RoomList() {
   const navigate = useNavigate();
   const { t } = useLanguage();
 
