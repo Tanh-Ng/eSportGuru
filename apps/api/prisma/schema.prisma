@@ -43,7 +43,9 @@ model User {
 model SherpaProfile {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   userId    String   @unique @db.ObjectId
+
   gameId    String?  @db.ObjectId
+  game      Game?    @relation(fields: [gameId], references: [id])
 
   bio        String?
   hourlyRate Int
@@ -61,6 +63,7 @@ model Game {
   name        String   @unique
   imageUrl   String?
   description String?
+  sherpaProfiles SherpaProfile[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -103,4 +106,19 @@ model SessionLog {
   updatedAt DateTime @updatedAt
 
   @@index([bookingId])
+}
+
+model SherpaAvailabilitySlot {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  sherpaId  String   @db.ObjectId
+  startTime DateTime
+  endTime   DateTime
+  isBooked  Boolean  @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([sherpaId])
+  @@index([startTime])
+  @@index([endTime])
 }
