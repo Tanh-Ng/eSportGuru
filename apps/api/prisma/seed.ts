@@ -1,3 +1,5 @@
+import bcrypt from "bcrypt"
+
 import {
   PrismaClient,
   Role,
@@ -51,19 +53,25 @@ async function seedUsers() {
 
   const allUsers = [...admins, ...learners, ...sherpas];
 
+  // 🔐 hash password 1 lần
+  const hashedPassword = await bcrypt.hash("password123", 10);
+
   for (const user of allUsers) {
     await prisma.user.upsert({
       where: { email: user.email },
-      update: {},
+      update: {
+        password: hashedPassword, // ✅ QUAN TRỌNG
+      },
       create: {
         email: user.email,
+        password: hashedPassword,
         roles: user.roles,
         balance: 0,
       },
     });
   }
 
-  console.log("Users seeded");
+  console.log("✅ Users seeded");
 
   return sherpas.map((s) => s.email);
 }
