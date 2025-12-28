@@ -29,6 +29,7 @@ enum SherpaAvailability {
 model User {
   id          String   @id @default(auto()) @map("_id") @db.ObjectId
   email       String   @unique
+  password    String
   discordId   String?  
   displayName String?
   roles       Role[]   @default([LEARNER])

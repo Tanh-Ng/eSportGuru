@@ -21,9 +21,14 @@
     "typecheck": "tsc"
   },
   "dependencies": {
+    "@nestjs/jwt": "^11.0.2",
+    "@nestjs/passport": "^11.0.5",
     "axios": "^1.13.2",
+    "bcrypt": "^6.0.0",
     "dotenv": "^17.2.1",
     "express": "^5.1.0",
+    "passport": "^0.7.0",
+    "passport-jwt": "^4.0.1",
     "zod": "^3.25.76"
   },
   "devDependencies": {
@@ -60,9 +65,11 @@
     "@swc/core": "^1.13.3",
     "@tailwindcss/typography": "^0.5.16",
     "@tanstack/react-query": "^5.84.2",
+    "@types/bcrypt": "^6.0.0",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",
     "@types/node": "^24.2.1",
+    "@types/passport-jwt": "^4.0.1",
     "@types/react": "^18.3.23",
     "@types/react-dom": "^18.3.7",
     "@types/three": "^0.176.0",
