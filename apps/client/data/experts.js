@@ -1,8 +1,11 @@
 const experts = [
-  // 1️⃣ ENGLISH – JOHNNY
   {
-    id: 1,
+    id: "694bb3cf06b4a62f2730c3b3",
     name: "Johnny W",
+    category: "english",
+    levels: ["beginner", "intermediate", "advanced"],
+    budget: "40-80",
+
     price: 70,
     avatar: "https://i.pravatar.cc/150?img=32",
     title: "English Specialist (Language and Literature)",
@@ -11,51 +14,49 @@ const experts = [
     dbsChecked: true,
 
     summary:
-      "Johnny is a qualified Teacher with an Enhanced DBS, specialising in English, Geography, and History. He offers a highly personal approach to tutoring, tailoring lessons to each student’s needs.",
+      "Johnny is a qualified Teacher with an Enhanced DBS, specialising in English, Geography, and History.",
 
-    about: `Tutor of English Language and Literature - KS3, KS4, GCSE, IGCSE, A-Level.
-Private tutor with 8 years of experience.
-Highly adaptable to online teaching.`,
+    about: `Tutor of English Language and Literature - KS3, KS4, GCSE, IGCSE, A-Level.`,
 
-    availability: [
-      { date: "10 Jun", available: true },
-      { date: "11 Jun", available: false },
-      { date: "12 Jun", available: true },
-      { date: "13 Jun", available: true },
-      { date: "14 Jun", available: false },
+    availability: {
+      workingDays: [1, 3, 5], // Thứ 2, 4, 6
+      busyDates: ["2025-06-14", "2025-06-20"], // ngày nghỉ đột xuất
+    },
+    pricing: [
+      { duration: 60, price: 300000 },
+      { duration: 90, price: 420000 },
+      { duration: 120, price: 520000 },
     ],
 
     subjects: [
-      { subject: "English", level: "Primary", rate: "£70/hr" },
-      { subject: "English", level: "GCSE", rate: "£70/hr" },
-      { subject: "English", level: "A-Level", rate: "£70/hr" },
+      { subject: "English", level: "Beginner", rate: "£70/hr" },
+      { subject: "English", level: "Intermediate", rate: "£70/hr" },
+      { subject: "English", level: "Advanced", rate: "£70/hr" },
     ],
   },
 
-  // 2️⃣ PROGRAMMING – SARAH
   {
     id: 2,
     name: "Sarah L",
+    category: "programming",
+    levels: ["beginner", "intermediate", "advanced"],
+    budget: "40-80",
+
     price: 60,
     avatar: "https://i.pravatar.cc/150?img=47",
     title: "Frontend & Fullstack Developer",
     experience: 5,
     qualified: true,
-    dbsChecked: false,
 
     summary:
-      "Sarah is a professional frontend and fullstack developer specialising in React, Node.js, and UI/UX design. She focuses on practical, project-based learning.",
+      "Sarah is a professional frontend and fullstack developer specialising in React and Node.js.",
 
-    about: `5 years working as a Fullstack Developer.
-Mentor for React, JavaScript, and real-world projects.
-Strong focus on clean UI and scalable code.`,
+    about: `Mentor for React, JavaScript, and real-world projects.`,
 
-    availability: [
-      { date: "10 Jun", available: true },
-      { date: "11 Jun", available: true },
-      { date: "12 Jun", available: false },
-      { date: "13 Jun", available: true },
-    ],
+    availability: {
+      workingDays: [2, 4, 6], // Tue Thu Sat
+      busyDates: []
+    },
 
     subjects: [
       { subject: "JavaScript", level: "Beginner", rate: "£50/hr" },
@@ -64,90 +65,82 @@ Strong focus on clean UI and scalable code.`,
     ],
   },
 
-  // 3️⃣ DATA SCIENCE – MICHAEL
   {
     id: 3,
     name: "Michael K",
+    category: "programming",
+    levels: ["intermediate", "advanced"],
+    budget: "40-80",
+
     price: 80,
     avatar: "https://i.pravatar.cc/150?img=12",
     title: "Data Scientist & AI Engineer",
     experience: 7,
-    qualified: true,
-    dbsChecked: false,
 
     summary:
-      "Michael is an experienced Data Scientist with a strong background in Machine Learning, Python, and AI systems.",
+      "Experienced Data Scientist with strong Machine Learning background.",
 
-    about: `Worked on multiple AI and data-driven products.
-Expert in Python, Pandas, Scikit-learn, and Deep Learning.
-Helps students understand both theory and practice.`,
+    about: `Expert in Python, Pandas, Scikit-learn, and Deep Learning.`,
 
     availability: [
-      { date: "10 Jun", available: false },
       { date: "11 Jun", available: true },
       { date: "12 Jun", available: true },
-      { date: "13 Jun", available: false },
     ],
 
     subjects: [
       { subject: "Python", level: "Intermediate", rate: "£70/hr" },
       { subject: "Machine Learning", level: "Advanced", rate: "£80/hr" },
-      { subject: "Data Science", level: "Advanced", rate: "£80/hr" },
     ],
   },
 
-  // 4️⃣ DESIGN – EMMA
   {
     id: 4,
     name: "Emma R",
+    category: "design",
+    levels: ["beginner", "intermediate"],
+    budget: "20-40",
+
     price: 55,
     avatar: "https://i.pravatar.cc/150?img=56",
     title: "UI/UX Designer",
     experience: 4,
-    qualified: true,
-    dbsChecked: false,
 
     summary:
-      "Emma is a creative UI/UX designer helping students design modern, user-friendly interfaces.",
+      "Creative UI/UX designer helping students build real-world portfolios.",
 
-    about: `UI/UX Designer with experience in Figma and Design Systems.
-Focus on real-world design thinking and portfolio building.`,
+    about: `Experienced in Figma and Design Systems.`,
 
     availability: [
       { date: "10 Jun", available: true },
       { date: "11 Jun", available: true },
-      { date: "12 Jun", available: true },
     ],
 
     subjects: [
       { subject: "UI Design", level: "Beginner", rate: "£50/hr" },
       { subject: "UX Research", level: "Intermediate", rate: "£55/hr" },
-      { subject: "Figma", level: "Intermediate", rate: "£55/hr" },
     ],
   },
 
-  // 5️⃣ CHESS – ALEX
   {
     id: 5,
     name: "Alex P",
+    category: "chess",
+    levels: ["beginner", "intermediate", "advanced"],
+    budget: "20-40",
+
     price: 40,
     avatar: "https://i.pravatar.cc/150?img=22",
     title: "Chess Coach (Strategy & Tactics)",
     experience: 10,
-    qualified: true,
-    dbsChecked: false,
 
     summary:
-      "Alex is a professional chess coach helping students improve strategic thinking and problem-solving skills.",
+      "Professional chess coach focusing on strategy and tactics.",
 
-    about: `10 years coaching chess for students of all levels.
-Focus on strategy, tactics, and tournament preparation.`,
+    about: `10 years coaching chess for students of all levels.`,
 
     availability: [
-      { date: "10 Jun", available: false },
       { date: "11 Jun", available: true },
       { date: "12 Jun", available: true },
-      { date: "13 Jun", available: true },
     ],
 
     subjects: [
