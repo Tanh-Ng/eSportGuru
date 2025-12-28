@@ -105,3 +105,4 @@ model SessionLog {
 
   @@index([bookingId])
 }
+

@@ -43,3 +43,4 @@ Web: http://localhost:3000
 - Discord Service đang giả lập; khi có bot thật, thay thế logic trong `discord.service.ts`.
 - Services booking/sherpa đang in-memory để demo; cần nối Prisma/Postgres cho môi trường thật.
 
+

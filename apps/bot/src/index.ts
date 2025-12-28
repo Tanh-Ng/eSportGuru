@@ -26,6 +26,21 @@ async function bootstrap() {
     console.log(`[bot] Logged in as ${client.user?.tag}`);
   });
 
+  // Tạo HTTP server trước để lấy expireSession callback
+  const app = createHttpServer(client);
+  const expireSession = (app as any).expireSession;
+
+  // Setup timer callbacks
+  const onTimerStart = (bookingId: string) => {
+    if (expireSession) {
+      sessionStore.startTimer(bookingId, expireSession);
+    }
+  };
+
+  const onTimerPause = (bookingId: string) => {
+    sessionStore.pauseTimer(bookingId);
+  };
+
   client.on('voiceStateUpdate', (oldState: VoiceState, newState: VoiceState) => {
     const now = Date.now();
     const oldChannel = oldState.channelId;
@@ -33,16 +48,15 @@ async function bootstrap() {
     const userId = newState.id;
 
     if (oldChannel && oldChannel !== newChannel) {
-      sessionStore.handleUserLeave(oldChannel, userId, now);
+      sessionStore.handleUserLeave(oldChannel, userId, now, onTimerPause);
     }
     if (newChannel && newChannel !== oldChannel) {
-      sessionStore.handleUserJoin(newChannel, userId, now);
+      sessionStore.handleUserJoin(newChannel, userId, now, onTimerStart);
     }
   });
 
   await client.login(DISCORD_TOKEN);
 
-  const app = createHttpServer(client);
   const server = createServer(app);
   server.listen(PORT, () => {
     console.log(`[bot] HTTP server listening on :${PORT}`);
