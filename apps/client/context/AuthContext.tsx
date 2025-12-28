@@ -1,11 +1,10 @@
 import { createContext, useContext, useState, useEffect } from "react";
+import { authApi } from "../api/auth.api";
 
 export interface User {
   id: string;
-  name: string;
   email: string;
-  avatar?: string;
-  provider?: "email" | "google" | "facebook";
+  displayName: string;
 }
 
 interface AuthContextType {
@@ -14,7 +13,6 @@ interface AuthContextType {
   isLoggedIn: boolean;
   login: (email: string, password: string) => Promise<void>;
   signUp: (name: string, email: string, password: string) => Promise<void>;
-  socialLogin: (provider: "google" | "facebook") => Promise<void>;
   logout: () => void;
 }
 
@@ -24,32 +22,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(false);
 
-  // Check if user is already logged in (from localStorage)
   useEffect(() => {
     const savedUser = localStorage.getItem("auth_user");
     if (savedUser) {
-      try {
-        setUser(JSON.parse(savedUser));
-      } catch {
-        localStorage.removeItem("auth_user");
-      }
+      setUser(JSON.parse(savedUser));
     }
   }, []);
 
   const login = async (email: string, password: string) => {
     setLoading(true);
     try {
-      // Placeholder: simulate login
-      if (email && password) {
-        const newUser: User = {
-          id: Math.random().toString(36).substring(7),
-          name: email.split("@")[0],
-          email,
-          provider: "email",
-        };
-        setUser(newUser);
-        localStorage.setItem("auth_user", JSON.stringify(newUser));
-      }
+      const res = await authApi.login({ email, password });
+
+      localStorage.setItem("access_token", res.accessToken);
+      localStorage.setItem("auth_user", JSON.stringify(res.user));
+
+      setUser(res.user);
+    } catch (err: any) {
+      throw err; // 🔥 ném lỗi cho page
     } finally {
       setLoading(false);
     }
@@ -58,39 +48,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signUp = async (name: string, email: string, password: string) => {
     setLoading(true);
     try {
-      // Placeholder: simulate signup
-      if (name && email && password) {
-        const newUser: User = {
-          id: Math.random().toString(36).substring(7),
-          name,
-          email,
-          provider: "email",
-        };
-        setUser(newUser);
-        localStorage.setItem("auth_user", JSON.stringify(newUser));
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
+      const res = await authApi.register({
+        displayName: name,
+        email,
+        password,
+      });
 
-  const socialLogin = async (provider: "google" | "facebook") => {
-    setLoading(true);
-    try {
-      // Placeholder: simulate social login
-      const mockEmails = {
-        google: "user@gmail.com",
-        facebook: "user@facebook.com",
-      };
-      const newUser: User = {
-        id: Math.random().toString(36).substring(7),
-        name: `${provider} User`,
-        email: mockEmails[provider],
-        avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${provider}`,
-        provider,
-      };
-      setUser(newUser);
-      localStorage.setItem("auth_user", JSON.stringify(newUser));
+      localStorage.setItem("access_token", res.accessToken);
+      localStorage.setItem("auth_user", JSON.stringify(res.user));
+
+      setUser(res.user);
+    } catch (err: any) {
+      throw err;
     } finally {
       setLoading(false);
     }
@@ -99,6 +68,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const logout = () => {
     setUser(null);
     localStorage.removeItem("auth_user");
+    localStorage.removeItem("access_token");
   };
 
   return (
@@ -109,7 +79,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         isLoggedIn: !!user,
         login,
         signUp,
-        socialLogin,
         logout,
       }}
     >
@@ -120,8 +89,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
 export function useAuth() {
   const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error("useAuth must be used within an AuthProvider");
+  if (!context) {
+    throw new Error("useAuth must be used within AuthProvider");
   }
   return context;
 }

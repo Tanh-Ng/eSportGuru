@@ -5,16 +5,17 @@ import { useLanguage } from "../context/LanguageContext";
 import { Mail, Lock, Loader2, Eye, EyeOff } from "lucide-react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
+import { authApi } from "../api/auth.api";
 
 export default function Login() {
   const navigate = useNavigate();
-  const { login, socialLogin, loading } = useAuth();
   const { language } = useLanguage();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
+  const { login, loading } = useAuth();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,15 +24,17 @@ export default function Login() {
     try {
       await login(email, password);
       navigate("/dashboard");
-    } catch (err) {
-      setError("Login failed. Please try again.");
+    } catch (err: any) {
+      console.error("LOGIN ERROR", err);
+      setError(err.message || "Đăng nhập thất bại");
     }
   };
+
 
   const handleSocialLogin = async (provider: "google" | "facebook") => {
     try {
       setError("");
-      await socialLogin(provider);
+      // await socialLogin(provider);
       navigate("/dashboard");
     } catch (err) {
       setError(`${provider} login failed. Please try again.`);

@@ -5,10 +5,11 @@ import { useLanguage } from "../context/LanguageContext";
 import { User, Mail, Lock, Loader2, Eye, EyeOff } from "lucide-react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
+import { authApi } from "../api/auth.api";
 
 export default function SignUp() {
   const navigate = useNavigate();
-  const { signUp, socialLogin, loading } = useAuth();
+  // const { signUp, socialLogin, loading } = useAuth();
   const { language } = useLanguage();
 
   const [name, setName] = useState("");
@@ -18,6 +19,7 @@ export default function SignUp() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,21 +30,64 @@ export default function SignUp() {
       return;
     }
 
+    setLoading(true);
+
     try {
-      await signUp(name, email, password);
-      navigate("/dashboard");
-    } catch (err) {
-      setError(language === "en" ? "Sign up failed. Please try again." : "Đăng ký thất bại. Vui lòng thử lại.");
+      console.log("REGISTER PAYLOAD:", {
+        email,
+        password,
+        displayName: name,
+      });
+
+      const result = await authApi.register({
+        email,
+        password,
+        displayName: name,
+      });
+
+      console.log("REGISTER SUCCESS:", result);
+
+      navigate("/login"); // hoặc dashboard
+    } catch (err: any) {
+      console.error("REGISTER ERROR FULL:", err);
+
+      if (err.status) {
+        console.error("STATUS:", err.status);
+        console.error("DATA:", err.data);
+
+        setError(
+          err.data?.message ||
+          (language === "en"
+            ? "Registration failed"
+            : "Đăng ký thất bại")
+        );
+      } else {
+        setError(
+          language === "en"
+            ? "Cannot connect to server"
+            : "Không kết nối được server"
+        );
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleSocialLogin = async (provider: "google" | "facebook") => {
     try {
       setError("");
-      await socialLogin(provider);
+      // await socialLogin(provider);
       navigate("/dashboard");
-    } catch (err) {
-      setError(`${provider} login failed. Please try again.`);
+    } catch (err: any) {
+      console.error("REGISTER ERROR:", err);
+
+      if (err.response) {
+        console.error("STATUS:", err.response.status);
+        console.error("DATA:", err.response.data);
+        setError(err.response.data.message || "Đăng ký thất bại");
+      } else {
+        setError("Không kết nối được server");
+      }
     }
   };
 

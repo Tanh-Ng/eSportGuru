@@ -8,30 +8,31 @@ export class AuthService {
   constructor(
     private prisma: PrismaService,
     private jwtService: JwtService,
-  ) {}
+  ) { }
 
   async register(data: RegisterDto) {
-    // Kiểm tra email tồn tại
+    console.log("REGISTER DTO:", data);
+
     const userExists = await this.prisma.user.findUnique({
       where: { email: data.email },
     });
+    console.log("USER EXISTS:", !!userExists);
 
-    if (userExists) throw new ConflictException('Email đã tồn tại');
+    if (userExists) throw new ConflictException("Email đã tồn tại");
 
-    // Băm mật khẩu
     const hashedPassword = await bcrypt.hash(data.password, 10);
 
-    // Tạo user mới [cite: 1, 2]
     const user = await this.prisma.user.create({
       data: {
         email: data.email,
         password: hashedPassword,
         displayName: data.displayName,
-        roles: ['LEARNER'], // Mặc định role từ schema 
+        roles: ['LEARNER'],
       },
     });
 
-    return { message: 'Đăng ký thành công', userId: user.id };
+    console.log("USER CREATED:", user.id);
+    return { message: "OK", userId: user.id };
   }
 
   async login(data: LoginDto) {
@@ -56,40 +57,40 @@ export class AuthService {
 
 
   // auth/auth.service.ts
-async registerSherpa(data: SherpaRegisterDto) {
-  const { email, password, displayName, bio, hourlyRate, gameId } = data;
+  async registerSherpa(data: SherpaRegisterDto) {
+    const { email, password, displayName, bio, hourlyRate, gameId } = data;
 
-  // Kiểm tra email tồn tại
-  const existingUser = await this.prisma.user.findUnique({ where: { email } });
-  if (existingUser) throw new ConflictException('Email đã tồn tại');
+    // Kiểm tra email tồn tại
+    const existingUser = await this.prisma.user.findUnique({ where: { email } });
+    if (existingUser) throw new ConflictException('Email đã tồn tại');
 
-  const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-  // Sử dụng Transaction để đảm bảo tính toàn vẹn dữ liệu
-  return await this.prisma.$transaction(async (tx) => {
-    // 1. Tạo User với Role là SHERPA
-    const user = await tx.user.create({
-      data: {
-        email,
-        password: hashedPassword,
-        displayName,
-        roles: ['SHERPA'], // Gán quyền SHERPA ngay từ đầu [cite: 1]
-      },
+    // Sử dụng Transaction để đảm bảo tính toàn vẹn dữ liệu
+    return await this.prisma.$transaction(async (tx) => {
+      // 1. Tạo User với Role là SHERPA
+      const user = await tx.user.create({
+        data: {
+          email,
+          password: hashedPassword,
+          displayName,
+          roles: ['SHERPA'], // Gán quyền SHERPA ngay từ đầu [cite: 1]
+        },
+      });
+
+      // 2. Tạo SherpaProfile liên kết với User vừa tạo 
+      const profile = await tx.sherpaProfile.create({
+        data: {
+          userId: user.id,
+          bio,
+          hourlyRate,
+          gameId,
+          isAcceptingBooking: true, // Mặc định chấp nhận lịch 
+          availability: 'AVAILABLE', // Mặc định trạng thái sẵn sàng 
+        },
+      });
+
+      return { userId: user.id, profileId: profile.id };
     });
-
-    // 2. Tạo SherpaProfile liên kết với User vừa tạo 
-    const profile = await tx.sherpaProfile.create({
-      data: {
-        userId: user.id,
-        bio,
-        hourlyRate,
-        gameId,
-        isAcceptingBooking: true, // Mặc định chấp nhận lịch 
-        availability: 'AVAILABLE', // Mặc định trạng thái sẵn sàng 
-      },
-    });
-
-    return { userId: user.id, profileId: profile.id };
-  });
-}
+  }
 }
