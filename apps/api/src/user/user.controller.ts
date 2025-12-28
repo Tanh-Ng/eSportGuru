@@ -1,19 +1,22 @@
-import { Controller, Post, Body, HttpCode, HttpStatus } from '@nestjs/common';
+// user.controller.ts
+import { Controller, Get, Post, Body, UseGuards, Req, Patch } from '@nestjs/common';
 import { UsersService } from './user.service';
-import { RegisterDto, LoginDto } from '../auth/dto/register.dto';
+import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
 
 @Controller('users')
+@UseGuards(JwtAuthGuard) // Chỉ người dùng đã đăng nhập mới xem được thông tin mình
 export class UsersController {
-  constructor(private usersService: UsersService) {}
+  constructor(private readonly usersService: UsersService) {}
 
-  @Post('register')
-  async register(@Body() registerDto: RegisterDto) {
-    return this.usersService.register(registerDto);
+  // API xem thông tin cá nhân & số dư
+  @Get('me')
+  async getMe(@Req() req) {
+    return await this.usersService.getMe(req.user.userId);
   }
 
-  @HttpCode(HttpStatus.OK)
-  @Post('login')
-  async login(@Body() loginDto: LoginDto) {
-    return this.usersService.login(loginDto);
+  // API nạp tiền (Ví dụ: sau khi thanh toán qua cổng thanh toán xong)
+  @Post('top-up')
+  async topUp(@Req() req, @Body('amount') amount: number) {
+    return await this.usersService.topUp(req.user.userId, amount);
   }
 }
