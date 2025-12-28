@@ -4,10 +4,11 @@ import { RegisterDto, LoginDto, SherpaRegisterDto } from './dto/register.dto';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService) { }
 
   @Post('register')
   async register(@Body() registerDto: RegisterDto) {
+    console.log('HIT REGISTER');
     return this.authService.register(registerDto);
   }
 

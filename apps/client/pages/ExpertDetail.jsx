@@ -6,15 +6,22 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 import React, { useState } from "react";
 import { createBooking } from "../api/booking.api";
+import { useAuth } from "../context/AuthContext";
+
 export default function ExpertDetail() {
     const { id } = useParams();
     const expert = experts.find((e) => String(e.id) === String(id));
     const [selectedTime, setSelectedTime] = useState(null);
     const [loading, setLoading] = useState(false);
     const [selectedPricing, setSelectedPricing] = useState(null)
+    const { user } = useAuth();
+    console.log("check res", user);
+    const learnerId = user?.id;
 
-    // demo: sau này lấy từ auth context
-    const learnerId = "learner_123";
+    if (!learnerId) {
+        alert("Bạn cần đăng nhập để đặt lịch");
+        return;
+    }
 
     if (!expert) {
         return (
