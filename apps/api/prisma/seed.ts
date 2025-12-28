@@ -10,25 +10,31 @@ import {
 const prisma = new PrismaClient();
 
 const games = [
-  { name: "Valorant" },
-  { name: "League of Legends" },
-  { name: "Dota 2" },
-  { name: "CS2" },
-  { name: "Apex Legends" },
-  { name: "PUBG" },
-  { name: "Overwatch 2" },
-  { name: "Fortnite" },
-  { name: "Rainbow Six Siege" },
-  { name: "Rocket League" },
+  { name: "Valorant", imageUrl: "hhh" },
+  { name: "League of Legends", imageUrl: "hhh" },
+  { name: "Dota 2", imageUrl: "hhh" },
+  { name: "CS2", imageUrl: "hhh" },
+  { name: "Apex Legends", imageUrl: "hhh" },
+  { name: "PUBG", imageUrl: "hhh" },
+  { name: "Overwatch 2", imageUrl: "hhh" },
+  { name: "Fortnite", imageUrl: "hhh" },
+  { name: "Rainbow Six Siege", imageUrl: "hhh" },
+  { name: "Rocket League", imageUrl: "hhh" },
 ];
+
 
 /////
 async function seedGames() {
   for (const game of games) {
     await prisma.game.upsert({
       where: { name: game.name },
-      update: {},
-      create: game,
+      update: {
+        imageUrl: game.imageUrl, // ✅ update game cũ
+      },
+      create: {
+        name: game.name,
+        imageUrl: game.imageUrl,
+      },
     });
   }
   console.log("✅ Games seeded");
