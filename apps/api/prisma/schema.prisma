@@ -43,6 +43,14 @@ model User {
 
 model SherpaProfile {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
+
+  // ====== fields phục vụ hiển thị expert ======
+  name       String           // mock.name
+  avatar     String?          // mock.avatar
+  experience Int              // mock.experience (năm)
+  rating     Float            // mock.rating
+
+  // ====== logic hệ thống ======
   userId    String   @unique @db.ObjectId
 
   gameId    String?  @db.ObjectId

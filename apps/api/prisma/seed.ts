@@ -22,6 +22,34 @@ const games = [
   { name: "Rocket League", imageUrl: "hhh" },
 ];
 
+export const mockExpertsExtra = [
+  { name: "Sora Nakano", avatar: "https://i.pravatar.cc/150?img=1", experience: 4, rating: 4.9 },
+  { name: "Yuki Hiroshi", avatar: "https://i.pravatar.cc/150?img=2", experience: 6, rating: 5.0 },
+  { name: "Aimi Tanaka", avatar: "https://i.pravatar.cc/150?img=5", experience: 3, rating: 4.7 },
+  { name: "Kaito Shira", avatar: "https://i.pravatar.cc/150?img=8", experience: 5, rating: 4.8 },
+  { name: "Rina Sakuragi", avatar: "https://i.pravatar.cc/150?img=9", experience: 2, rating: 4.5 },
+  { name: "Kenji Sato", avatar: "https://i.pravatar.cc/150?img=12", experience: 7, rating: 4.9 },
+  { name: "Hana Midori", avatar: "https://i.pravatar.cc/150?img=16", experience: 4, rating: 4.6 },
+  { name: "Tatsuya Fujii", avatar: "https://i.pravatar.cc/150?img=18", experience: 8, rating: 5.0 },
+  { name: "Mei Misaki", avatar: "https://i.pravatar.cc/150?img=21", experience: 3, rating: 4.4 },
+  { name: "Ren Ichigo", avatar: "https://i.pravatar.cc/150?img=33", experience: 5, rating: 4.7 },
+  { name: "Kiyomi Nara", avatar: "https://i.pravatar.cc/150?img=32", experience: 2, rating: 4.3 },
+  { name: "Haru Yoshida", avatar: "https://i.pravatar.cc/150?img=11", experience: 6, rating: 4.8 },
+  { name: "Sayuri Hime", avatar: "https://i.pravatar.cc/150?img=26", experience: 4, rating: 4.9 },
+  { name: "Ryota Zen", avatar: "https://i.pravatar.cc/150?img=13", experience: 7, rating: 4.7 },
+  { name: "Akane Kuro", avatar: "https://i.pravatar.cc/150?img=23", experience: 5, rating: 4.6 },
+  { name: "Shinichi Kai", avatar: "https://i.pravatar.cc/150?img=14", experience: 9, rating: 5.0 },
+  { name: "Yumi Azusa", avatar: "https://i.pravatar.cc/150?img=25", experience: 3, rating: 4.5 },
+  { name: "Kazuto Kirigaya", avatar: "https://i.pravatar.cc/150?img=15", experience: 6, rating: 4.8 },
+  { name: "Miku Hatsune", avatar: "https://i.pravatar.cc/150?img=20", experience: 2, rating: 4.9 },
+  { name: "Sho Kurusu", avatar: "https://i.pravatar.cc/150?img=17", experience: 4, rating: 4.4 },
+  { name: "Nozomi Toujou", avatar: "https://i.pravatar.cc/150?img=24", experience: 5, rating: 4.7 },
+  { name: "Genji Shimada", avatar: "https://i.pravatar.cc/150?img=27", experience: 10, rating: 5.0 },
+  { name: "Eri Ayase", avatar: "https://i.pravatar.cc/150?img=28", experience: 4, rating: 4.8 },
+  { name: "Zoro Ronoa", avatar: "https://i.pravatar.cc/150?img=29", experience: 8, rating: 4.9 },
+  { name: "Nami Orange", avatar: "https://i.pravatar.cc/150?img=30", experience: 6, rating: 4.7 }
+];
+
 
 /////
 async function seedGames() {
@@ -84,35 +112,52 @@ async function seedUsers() {
 
 /////
 async function seedSherpaProfiles(sherpaEmails: string[]) {
-  const games = await prisma.game.findMany();
+  const games = await prisma.game.findMany()
 
   if (games.length === 0) {
-    throw new Error("No games found. Seed games first!");
+    throw new Error("No games found. Seed games first!")
   }
 
-  for (const email of sherpaEmails) {
+  const experts = mockExpertsExtra.slice(0, sherpaEmails.length)
+
+  for (let i = 0; i < sherpaEmails.length; i++) {
+    const email = sherpaEmails[i]
+    const expert = experts[i]
+
     const user = await prisma.user.findUnique({
       where: { email },
-    });
+    })
 
-    if (!user) continue;
+    if (!user || !expert) continue
 
     await prisma.sherpaProfile.upsert({
       where: { userId: user.id },
       update: {
+        name: expert.name,
+        avatar: expert.avatar,
+        experience: expert.experience,
+        rating: expert.rating,
         availability: SherpaAvailability.AVAILABLE,
       },
       create: {
         userId: user.id,
+
+        // 🔥 mock expert fields
+        name: expert.name,
+        avatar: expert.avatar,
+        experience: expert.experience,
+        rating: expert.rating,
+
+        // 🔧 system fields
         gameId: games[Math.floor(Math.random() * games.length)].id,
         bio: "Experienced esports coach",
         hourlyRate: 1500,
         availability: SherpaAvailability.AVAILABLE,
       },
-    });
+    })
   }
 
-  console.log("Sherpa profiles seeded");
+  console.log("✅ Sherpa profiles seeded with mock experts")
 }
 
 /////
