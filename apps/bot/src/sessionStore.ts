@@ -5,6 +5,7 @@ type ActiveJoin = {
 
 export type SessionState = {
   bookingId: string;
+  // single session channel id
   channelId: string;
   guildId: string;
   totalSeconds: number;

@@ -4,7 +4,7 @@ import { CreateBookingDto } from './dto/create-booking.dto';
 
 @Controller('booking')
 export class BookingController {
-  constructor(private readonly bookingService: BookingService) {}
+  constructor(private readonly bookingService: BookingService) { }
 
   /**
    * @desc    Tạo mới một yêu cầu đặt lịch dạy
@@ -38,6 +38,15 @@ export class BookingController {
   }
 
   /**
+   * @desc    Sherpa bấm Start để bắt đầu buổi học (Bot sẽ trả về invites / cố gắng move users)
+   * @route   PATCH /booking/:id/start
+   */
+  @Patch(':id/start')
+  async start(@Param('id') id: string) {
+    return await this.bookingService.start(id);
+  }
+
+  /**
    * @desc    Lấy thông tin phòng Discord của buổi học
    * @route   GET /booking/:id/invite
    * @access  Các bên liên quan (Learner & Sherpa)
@@ -45,9 +54,9 @@ export class BookingController {
   @Get(':id/invite')
   async invite(@Param('id') id: string) {
     const booking = await this.bookingService.findById(id);
-    return { 
-      inviteLink: booking.discordInviteLink, 
-      discordChannelId: booking.discordChannelId 
+    return {
+      inviteLink: booking.discordInviteLink,
+      discordChannelId: booking.discordChannelId
     };
   }
 
