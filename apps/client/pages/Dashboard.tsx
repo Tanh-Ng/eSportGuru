@@ -6,6 +6,9 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 
 export default function Dashboard() {
+  const mockAvatar = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSkDR-O7k-eacQzPYulNl1cMdaoaYAvYVGm_w&s"; // Một avatar anime nữ rất xinh
+  const defaultProvider = "Google";
+
   const navigate = useNavigate();
   const { user, logout } = useAuth();
   const { language } = useLanguage();
@@ -36,7 +39,7 @@ export default function Dashboard() {
           <h1 className="text-4xl font-bold text-slate-900 dark:text-white mb-2">
             {language === "en" ? "Welcome, " : "Chào mừng, "}
             <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              {user.name}
+              {user.displayName}
             </span>
           </h1>
           <p className="text-lg text-slate-600 dark:text-slate-400">
@@ -54,29 +57,34 @@ export default function Dashboard() {
             </h2>
 
             <div className="flex items-start gap-6 mb-8">
-              {user.avatar ? (
+              <div className="relative group">
                 <img
-                  src={user.avatar}
-                  alt={user.name}
-                  className="w-24 h-24 rounded-full object-cover border-2 border-blue-500"
-                />
-              ) : (
-                <div className="w-24 h-24 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
-                  <User className="w-12 h-12 text-white" />
-                </div>
-              )}
+                  src={mockAvatar}
 
-              <div>
-                <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-1">
-                  {user.name}
+                  className="w-24 h-24 rounded-full object-cover border-4 border-white dark:border-slate-800 shadow-xl transition-transform duration-300 group-hover:scale-105"
+                />
+                <div className="absolute bottom-0 right-0 w-6 h-6 bg-emerald-500 border-4 border-white dark:border-slate-900 rounded-full"></div>
+              </div>
+
+              <div className="flex-1 pt-2">
+                <h3 className="text-2xl font-black text-slate-900 dark:text-white mb-2 tracking-tight">
+                  {user.displayName || (language === "en" ? "Guest User" : "Khách")}
                 </h3>
-                <p className="text-slate-600 dark:text-slate-400 mb-3">
-                  {user.provider ? (
-                    <span className="inline-block px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 rounded-full text-sm font-medium">
-                      {language === "en" ? "Joined via" : "Tham gia qua"} {providerLabel[user.provider] || user.provider}
-                    </span>
-                  ) : null}
-                </p>
+
+                <div className="flex flex-wrap gap-2">
+                  {/* PROVIDER: Mock nếu không có */}
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400 rounded-full text-xs font-bold uppercase tracking-wider">
+                    <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15h-2v-6h2v6zm0-8h-2V7h2v2z" />
+                    </svg>
+                    {language === "en" ? "Joined via" : "Tham gia qua"}: {defaultProvider}
+                  </span>
+
+                  {/* Badge bổ sung cho chuyên nghiệp */}
+                  <span className="px-3 py-1 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 rounded-full text-xs font-bold uppercase tracking-wider">
+                    Verified Member
+                  </span>
+                </div>
               </div>
             </div>
 
@@ -86,10 +94,10 @@ export default function Dashboard() {
                 <Mail className="w-5 h-5 text-slate-400" />
                 <div className="flex-1">
                   <p className="text-xs font-medium text-slate-600 dark:text-slate-400 uppercase">
-                    {language === "en" ? "Email" : "Email"}
+                    {language === "en" ? "Name" : "Tên"}
                   </p>
                   <p className="text-sm font-semibold text-slate-900 dark:text-white">
-                    {user.email}
+                    {user.displayName}
                   </p>
                 </div>
               </div>
