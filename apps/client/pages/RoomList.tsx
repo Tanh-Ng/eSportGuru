@@ -35,13 +35,13 @@ export default function RoomList() {
         <table className="w-full border-collapse">
           <thead>
             <tr className="bg-slate-200 dark:bg-slate-800">
-              <th className="p-4">#</th>
-              <th className="p-4">{t.rooms.teacher}</th>
-              <th className="p-4">{t.rooms.subject}</th>
-              <th className="p-4">{t.rooms.level}</th>
-              <th className="p-4">{t.rooms.date}</th>
-              <th className="p-4">{t.rooms.time}</th>
-              <th className="p-4">{t.rooms.status}</th>
+              <th className="p-4 text-left">#</th>
+              <th className="p-4 text-left">{t.rooms.sherpa}</th>
+              <th className="p-4 text-left">{t.rooms.subject}</th>
+              <th className="p-4 text-left">{t.rooms.level}</th>
+              <th className="p-4 text-left">{t.rooms.date}</th>
+              <th className="p-4 text-left">{t.rooms.time}</th>
+              <th className="p-4 text-left">{t.rooms.status}</th>
               <th className="p-4 text-center">{t.rooms.action}</th>
             </tr>
           </thead>
