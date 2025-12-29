@@ -32,7 +32,7 @@ export class BookingService {
         status: BookingStatus.PENDING,
         startTime: new Date(data.startTime),
         price: sherpaProfile.hourlyRate,
-        notes: data.notes,
+        notes: data.notes || "Welcome to my room",
       },
     })
   }

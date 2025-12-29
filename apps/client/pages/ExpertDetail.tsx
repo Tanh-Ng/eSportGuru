@@ -4,6 +4,7 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { useAuth } from "../context/AuthContext";
 import { sherpaApi, SherpaDTO } from "../api/sherpa.api";
+import { bookingApi } from "../api/booking.api";
 
 interface BookingDay {
     date: Date;
@@ -107,6 +108,42 @@ export default function ExpertDetail() {
                 Expert not found
             </div>
         );
+
+    console.log("check learnerId", learnerId);
+    console.log("check sherpa", expert?.userId);
+    console.log("check sherpa", expert);
+    const handleBookSession = async () => {
+        if (!learnerId || !expert) {
+            alert("Bạn cần đăng nhập")
+            return
+        }
+
+        if (selectedDates.length === 0) {
+            alert("Vui lòng chọn ít nhất 1 ngày")
+            return
+        }
+
+        try {
+            const startDate = selectedDates[0]
+
+            const payload = {
+                learnerId,
+                sherpaId: expert.userId,
+                startTime: startDate.toISOString(),
+                notes: "Booked from Expert Detail",
+            }
+
+            await bookingApi.createBooking(payload)
+
+            alert("Đặt lịch thành công, vui lòng chờ Sherpa duyệt")
+
+            // reset UI
+            setSelectedDates([])
+        } catch (error) {
+            console.error(error)
+            alert("Đặt lịch thất bại")
+        }
+    }
 
     return (
         <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
@@ -222,7 +259,7 @@ export default function ExpertDetail() {
                                         Message
                                     </button>
                                     <button
-                                        onClick={() => document.getElementById("booking-section")?.scrollIntoView({ behavior: "smooth" })}
+                                        onClick={handleBookSession}
                                         className="flex-1 sm:flex-none px-8 py-3.5 rounded-xl bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-200 font-bold hover:bg-slate-50 transition-all whitespace-nowrap"
                                     >
                                         Book Session

@@ -34,15 +34,15 @@ const App = () => (
               <Routes>
                 <Route path="/" element={<Index />} />
                 <Route path="/my_session" element={<MyLearningSessions />} />
-                <Route path="/about" element={<RoomList />} />
-                {/* <Route
+                {/* <Route path="/about" element={<RoomList />} /> */}
+                <Route
                   path="/about"
                   element={
                     <RoleGuard allow={["SHERPA"]}>
                       <RoomList />
                     </RoleGuard>
                   }
-                /> */}
+                />
                 <Route path="/login" element={<Login />} />
                 <Route path="/signup" element={<SignUp />} />
                 <Route path="/dashboard" element={<Dashboard />} />
