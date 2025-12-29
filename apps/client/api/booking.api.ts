@@ -27,3 +27,13 @@ export const getBookingsForSherpa = async (sherpaId: string) => {
     return res.data
 }
 
+export const confirmBooking = async (bookingId: string) => {
+    const res = await axios.patch(`${API_URL}/booking/${bookingId}/confirm`)
+    return res.data
+}
+
+export const rejectBooking = async (bookingId: string) => {
+    const res = await axios.patch(`${API_URL}/booking/${bookingId}/reject`)
+    return res.data
+}
+

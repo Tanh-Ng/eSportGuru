@@ -25,6 +25,7 @@ export const authApi = {
     }) {
         try {
             const res = await axios.post(`${API_URL}/auth/login`, data);
+            console.log("check res", res);
             return res.data;
         } catch (error: any) {
             if (error.response) {

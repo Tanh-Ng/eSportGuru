@@ -30,12 +30,13 @@ model User {
   id          String   @id @default(auto()) @map("_id") @db.ObjectId
   email       String   @unique
   password    String
-  discordId   String?  
+  discordId   String?
   displayName String?
   roles       Role[]   @default([LEARNER])
-
-  // store money in cents
   balance     Int      @default(0)
+
+  learnerBookings Booking[] @relation("LearnerBookings")
+  sherpaBookings  Booking[] @relation("SherpaBookings")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -79,28 +80,28 @@ model Game {
 }
 
   model Booking {
-    id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
 
-    learnerId String   @db.ObjectId
-    sherpaId  String   @db.ObjectId
+  learnerId String   @db.ObjectId
+  sherpaId  String   @db.ObjectId
 
-    status    BookingStatus @default(PENDING)
+  learner User @relation("LearnerBookings", fields: [learnerId], references: [id])
+  sherpa  User @relation("SherpaBookings", fields: [sherpaId], references: [id])
 
-    discordChannelId String?
-    discordInviteLink String?
+  status BookingStatus @default(PENDING)
 
-    startTime DateTime
-    endTime   DateTime?
-    price     Int?
-    notes     String?
+  discordChannelId String?
+  discordInviteLink String?
 
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+  startTime DateTime
+  endTime   DateTime?
+  price     Int?
+  notes     String?
 
-    @@index([learnerId])
-    @@index([sherpaId])
-    @@index([status])
-  }
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 
 model SessionLog {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId

@@ -12,6 +12,8 @@ export default function Header() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [isLanguageOpen, setIsLanguageOpen] = useState(false);
+
+  console.log("check user", user);
   const navLinkClass = ({ isActive }: { isActive: boolean }) =>
     `relative font-medium text-sm transition-colors
    ${isActive

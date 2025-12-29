@@ -4,7 +4,6 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { useAuth } from "../context/AuthContext";
 import { sherpaApi, SherpaDTO } from "../api/sherpa.api";
-import { addMockFields } from "../data/mockExpertsExtra";
 
 interface BookingDay {
     date: Date;
@@ -39,9 +38,9 @@ export default function ExpertDetail() {
             try {
                 setLoading(true);
                 const allExperts = await sherpaApi.getAllSherpas();
-                const expertsWithMock = allExperts.map(addMockFields);
 
-                const found = expertsWithMock.find(e => {
+
+                const found = allExperts.find(e => {
                     const expertId = String(e.id || e._id);
                     return expertId === String(id);
                 });

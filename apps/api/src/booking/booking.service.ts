@@ -1,103 +1,122 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
-import { DiscordService } from '../discord/discord.service';
-import { PrismaService } from '../../prisma/prisma.service'; // Giả định bạn đã có PrismaService
-import { CreateBookingDto } from './dto/create-booking.dto';
-import { BookingStatus } from '@prisma/client'; // Sử dụng enum từ schema 
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common'
+import { PrismaService } from '../../prisma/prisma.service'
+import { DiscordService } from '../discord/discord.service'
+import { CreateBookingDto } from './dto/create-booking.dto'
+import { BookingStatus } from '@prisma/client'
 
 @Injectable()
 export class BookingService {
-  // Loại bỏ mảng private bookings = [] để dùng DB
-
   constructor(
     private readonly prisma: PrismaService,
     private readonly discordService: DiscordService,
-  ) {}
+  ) { }
 
-  /**
-   * THÊM (Create): Lưu record mới vào MongoDB.
-   * Logic: Lấy giá hourlyRate hiện tại của Sherpa để chốt giá vào booking.
-   */
+  // ================= CREATE =================
   async create(data: CreateBookingDto) {
     const sherpaProfile = await this.prisma.sherpaProfile.findUnique({
-      where: { userId: data.sherpaId }
-    });
+      where: { userId: data.sherpaId },
+    })
 
-    if (!sherpaProfile) throw new NotFoundException('Không tìm thấy Sherpa');
+    if (!sherpaProfile) {
+      throw new NotFoundException('Không tìm thấy Sherpa')
+    }
 
-    return await this.prisma.booking.create({
+    return this.prisma.booking.create({
       data: {
         learnerId: data.learnerId,
         sherpaId: data.sherpaId,
-        status: BookingStatus.PENDING, // Mặc định là PENDING 
+        status: BookingStatus.PENDING,
         startTime: new Date(data.startTime),
-        price: sherpaProfile.hourlyRate, // Chốt giá tại thời điểm đặt 
+        price: sherpaProfile.hourlyRate,
         notes: data.notes,
       },
-    });
+    })
   }
 
-  /**
-   * TÌM KIẾM (Find): Tìm theo ID trong DB.
-   */
+  // ================= FIND BY ID =================
   async findById(id: string) {
     const booking = await this.prisma.booking.findUnique({
       where: { id },
-    });
-    if (!booking) throw new NotFoundException(`Booking ${id} không tồn tại`);
-    return booking;
+    })
+
+    if (!booking) {
+      throw new NotFoundException(`Booking ${id} không tồn tại`)
+    }
+
+    return booking
   }
 
-  /**
-   * XÁC NHẬN (Confirm): Cập nhật trạng thái và tạo phòng Discord[cite: 1, 6].
-   */
+  // ================= CONFIRM =================
   async confirm(id: string) {
-    const booking = await this.findById(id);
+    const booking = await this.findById(id)
 
     if (booking.status !== BookingStatus.PENDING) {
-      throw new BadRequestException('Chỉ có thể xác nhận các yêu cầu đang PENDING');
+      throw new BadRequestException('Chỉ xác nhận booking PENDING')
     }
 
     const room = await this.discordService.createPrivateRoom({
       bookingId: booking.id,
-    });
+    })
 
-    return await this.prisma.booking.update({
+    return this.prisma.booking.update({
       where: { id },
       data: {
         status: BookingStatus.CONFIRMED,
-        discordChannelId: room.discordChannelId, // Lưu ID kênh [cite: 6]
-        discordInviteLink: room.inviteLink,      // Lưu link mời [cite: 6]
+        discordChannelId: room.discordChannelId,
+        discordInviteLink: room.inviteLink,
       },
-    });
+    })
   }
 
-  /**
-   * XÓA (Soft Delete): Không xóa cứng, chỉ chuyển sang CANCELLED.
-   * Giúp giữ lại lịch sử để đối soát balance (số dư).
-   */
+  // ================= CANCEL =================
   async cancel(id: string) {
-    await this.findById(id);
+    await this.findById(id)
 
-    return await this.prisma.booking.update({
+    return this.prisma.booking.update({
       where: { id },
       data: { status: BookingStatus.CANCELLED },
-    });
+    })
   }
 
+  // ================= LIST FOR SHERPA =================
   /**
-   * LIÊT KÊ: Truy vấn danh sách từ Database theo ID người dùng.
+   * Trả về:
+   * - tên người học (User.displayName)
+   * - tên game (Game.name)
    */
   async listForSherpa(sherpaId: string) {
-    return await this.prisma.booking.findMany({
+    return this.prisma.booking.findMany({
       where: { sherpaId },
       orderBy: { startTime: 'desc' },
-    });
+      select: {
+        id: true,
+        status: true,
+        startTime: true,
+        endTime: true,
+        price: true,
+        notes: true,
+
+        // ===== learner =====
+        learnerId: true,
+        learner: {
+          select: {
+            displayName: true,
+          },
+        },
+
+      },
+    })
   }
 
+  // ================= LIST FOR LEARNER =================
   async listForLearner(learnerId: string) {
-    return await this.prisma.booking.findMany({
+    return this.prisma.booking.findMany({
       where: { learnerId },
       orderBy: { startTime: 'desc' },
-    });
+    })
   }
 }

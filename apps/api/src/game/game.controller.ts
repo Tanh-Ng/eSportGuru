@@ -11,7 +11,7 @@ import { GameService } from './game.service';
 
 @Controller('games')
 export class GameController {
-  constructor(private readonly gameService: GameService) {}
+  constructor(private readonly gameService: GameService) { }
 
   @Get()
   getAll() {
@@ -53,4 +53,3 @@ export class GameController {
     return this.gameService.delete(id);
   }
 }
-x

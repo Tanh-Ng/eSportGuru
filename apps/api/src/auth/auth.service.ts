@@ -50,7 +50,8 @@ export class AuthService {
       user: {
         id: user.id,
         email: user.email,
-        displayName: user.displayName
+        displayName: user.displayName,
+        role: user.roles
       }
     };
   }
@@ -60,33 +61,41 @@ export class AuthService {
   async registerSherpa(data: SherpaRegisterDto) {
     const { email, password, displayName, bio, hourlyRate, gameId } = data;
 
-    // Kiểm tra email tồn tại
     const existingUser = await this.prisma.user.findUnique({ where: { email } });
     if (existingUser) throw new ConflictException('Email đã tồn tại');
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Sử dụng Transaction để đảm bảo tính toàn vẹn dữ liệu
     return await this.prisma.$transaction(async (tx) => {
-      // 1. Tạo User với Role là SHERPA
+      // 1. Tạo User
       const user = await tx.user.create({
         data: {
           email,
           password: hashedPassword,
           displayName,
-          roles: ['SHERPA'], // Gán quyền SHERPA ngay từ đầu [cite: 1]
+          roles: ['SHERPA'],
         },
       });
 
-      // 2. Tạo SherpaProfile liên kết với User vừa tạo 
+      // 2. Tạo SherpaProfile - CẬP NHẬT ĐOẠN NÀY
       const profile = await tx.sherpaProfile.create({
         data: {
           userId: user.id,
+          // Cung cấp các trường bắt buộc mà bạn mới thêm vào Schema
+          name: displayName,          // Lấy luôn displayName của user làm name
+          avatar: "",                 // Mặc định rỗng hoặc link anime mock
+          experience: 0,              // Mới đăng ký nên để 0
+          rating: 5.0,                // Mặc định 5 sao cho người mới
+
           bio,
           hourlyRate,
-          gameId,
-          isAcceptingBooking: true, // Mặc định chấp nhận lịch 
-          availability: 'AVAILABLE', // Mặc định trạng thái sẵn sàng 
+          isAcceptingBooking: true,
+          availability: 'AVAILABLE',
+
+          // Dùng connect để tránh lỗi "string is not assignable to never"
+          game: gameId ? {
+            connect: { id: gameId }
+          } : undefined,
         },
       });
 
