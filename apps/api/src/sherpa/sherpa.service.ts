@@ -4,15 +4,15 @@ import { PrismaService } from "../../prisma/prisma.service";
 
 @Injectable()
 export class SherpaService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
   // ===== TRẠNG THÁI (STATUS) =====
   // Thay vì dùng mảng statuses[] tạm thời, ta lưu trực tiếp vào SherpaProfile trong DB
   async upsertStatus(userId: string, availability: SherpaAvailability, isAcceptingBooking: boolean) {
     return await this.prisma.sherpaProfile.update({
       where: { userId },
-      data: { 
-        availability, 
-        isAcceptingBooking 
+      data: {
+        availability,
+        isAcceptingBooking
       },
     });
   }
@@ -38,9 +38,9 @@ export class SherpaService {
     // Đã có relation trong schema.prisma nên không cần 'as any' 
     const profile = await this.prisma.sherpaProfile.findUnique({
       where: { userId },
-      include: { 
-        game: true 
-      }, 
+      include: {
+        game: true
+      },
     });
 
     if (!profile) {
@@ -67,8 +67,8 @@ export class SherpaService {
         gameId: data.gameId,
         availability: data.availability,
       },
-      include: { 
-        game: true 
+      include: {
+        game: true
       },
     });
   }
@@ -126,5 +126,17 @@ export class SherpaService {
     });
 
     return { success: true };
+  }
+
+  async getAllSherpasWithGame() {
+    return await this.prisma.sherpaProfile.findMany({
+      where: {
+        isAcceptingBooking: true, // optional
+        availability: 'AVAILABLE', // optional
+      },
+      include: {
+        game: true, // JOIN Game theo gameId
+      },
+    });
   }
 }
