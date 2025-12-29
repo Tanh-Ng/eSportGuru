@@ -16,7 +16,9 @@ export default function RoomStatus({ startTime, endTime, t }) {
   }
 
   if (now >= start && now <= end) {
-    return <span className="text-red-600 font-medium">🔴 {t.rooms.busy}</span>;
+    return (
+      <span className="text-red-600 font-medium">🔴 {t.rooms.pending}</span>
+    );
   }
 
   return <span className="text-green-600 font-medium">🟢 {t.rooms.free}</span>;
