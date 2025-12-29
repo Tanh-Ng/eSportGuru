@@ -5,6 +5,10 @@ import { PrismaService } from '../../prisma/prisma.service';
 interface CreateRoomPayload {
   bookingId: string;
   channelName?: string;
+  learnerUserId?: string;
+  learnerDiscordId?: string;
+  sherpaUserId?: string;
+  sherpaDiscordId?: string;
 }
 
 @Injectable()
@@ -13,7 +17,7 @@ export class DiscordService {
   private readonly botBaseUrl = process.env.BOT_BASE_URL;
   private readonly guildId = process.env.DISCORD_GUILD_ID ?? '@me';
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
   /**
    * @desc    Yêu cầu Bot tạo phòng voice cho buổi học
@@ -32,6 +36,10 @@ export class DiscordService {
         body: JSON.stringify({
           bookingId: payload.bookingId,
           channelName: payload.channelName,
+          learnerUserId: (payload as any).learnerUserId,
+          learnerDiscordId: (payload as any).learnerDiscordId,
+          sherpaUserId: (payload as any).sherpaUserId,
+          sherpaDiscordId: (payload as any).sherpaDiscordId,
         }),
       });
 
@@ -39,17 +47,47 @@ export class DiscordService {
         throw new BadGatewayException(`Bot service trả về lỗi: ${res.status}`);
       }
 
-      const data = (await res.json()) as { discordChannelId: string };
-      
-      // Tạo link mời dựa trên Guild ID và Channel ID nhận được
-      const inviteLink = `https://discord.com/channels/${this.guildId}/${data.discordChannelId}`;
+      const data = (await res.json()) as {
+        channelId?: string;
+        invite?: string | null;
+      };
+
+      const discordChannelId = data.channelId;
+      const inviteLink = data.invite || (discordChannelId ? `https://discord.com/channels/${this.guildId}/${discordChannelId}` : undefined);
 
       return {
-        discordChannelId: data.discordChannelId,
+        discordChannelId: discordChannelId as string,
         inviteLink,
       };
     } catch (error) {
       this.logger.error(`Lỗi khi tạo phòng Discord cho booking ${payload.bookingId}:`, error);
+      throw new InternalServerErrorException('Không thể kết nối với Bot Discord');
+    }
+  }
+
+  /**
+   * @desc Call bot to start a session: return invites and optionally move users
+   */
+  async startSession(bookingId: string, learnerDiscordId?: string, sherpaDiscordId?: string) {
+    if (!this.botBaseUrl) {
+      return { bookingId, learnerInvite: null, sherpaInvite: null, moved: { learner: false, sherpa: false } };
+    }
+
+    try {
+      const res = await fetch(`${this.botBaseUrl}/sessions/${bookingId}/start`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ learnerDiscordId, sherpaDiscordId }),
+      });
+
+      if (!res.ok) {
+        throw new BadGatewayException(`Bot service trả về lỗi: ${res.status}`);
+      }
+
+      const data = await res.json();
+      return data;
+    } catch (error) {
+      this.logger.error(`Lỗi khi start session ${bookingId}:`, error);
       throw new InternalServerErrorException('Không thể kết nối với Bot Discord');
     }
   }
@@ -72,10 +110,10 @@ export class DiscordService {
         throw new BadGatewayException(`Lỗi khi kết thúc buổi học từ Bot: ${res.status}`);
       }
 
-      const result = (await res.json()) as { 
-        bookingId: string; 
-        totalSeconds: number; 
-        discordChannelId: string 
+      const result = (await res.json()) as {
+        bookingId: string;
+        totalSeconds: number;
+        discordChannelId: string
       };
 
       // TỰ ĐỘNG LƯU NHẬT KÝ: Khi kết thúc, ghi ngay vào bảng SessionLog
